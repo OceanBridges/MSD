@@ -1,43 +1,6 @@
-import numpy as np
-import matplotlib.pyplot as plt
-from dataclasses import make_dataclass
-import pandas as pd
-import seaborn as sns
+This code uses txt data to calculate the mean square displacement of particle trajectories. If you use this code, you need to pay attention to the order of the columns in your txt file: Time, Particle index, X, Y.
 
-# Loading data from the txt file
-data = np.loadtxt('/Users/arthurcoet/Documents/PhD COËT/CiNAM/NCDs/Vibrio/VibrioLCBMSD.txt')
+Once the mean square displacement has been calculated, it will be plotted in 2 different graphs.
+The first graph represents the MSD as a function of time Tau, for each of the particles. The second plot shows the MSD as a function of time Tau for the average particle trajectory. 
 
-# Retrieving data columns
-temps = data[:, 0]
-indices = data[:, 1]
-positions_x = data[:, 2]
-positions_y = data[:, 3]
-
-# Calculation of the MSD for each particle
-particle_indices = np.unique(indices)
-msd_particles = []
-MsdClass = make_dataclass("Point", [("particule", int), ("t", int), ("msd", float)])
-
-for particle_index in particle_indices:
-    indices_particle = np.where(indices == particle_index)[0]
-    x_particle = positions_x[indices_particle]
-    y_particle = positions_y[indices_particle]
-    msd = (x_particle - x_particle[0])**2 + (y_particle - y_particle[0])**2
-    for i in range(len(msd)):
-        msd_particles.append(MsdClass(particle_index, temps[indices_particle[i]], msd[i]))
-
-data = pd.DataFrame(msd_particles)
-
-# Plot MSD with y-axis in log scale
-sns.lineplot(x="t", y="msd", data=data, hue="particule")
-plt.xlabel('Temps')
-plt.ylabel('MSD')
-plt.title('MSD moyen en fonction du temps')
-plt.show()
-
-# Plot MSD (average) with y-axis in log scale
-sns.lineplot(x="t", y="msd", data=data)
-plt.xlabel('Temps')
-plt.ylabel('MSD')
-plt.title('MSD moyen en fonction du temps (Moyenne particule)')
-plt.show()
+Please note that these graphs do not show the MSD logarithm.
